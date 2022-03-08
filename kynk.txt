@@ -1,0 +1,270 @@
+Muhammed GİDER 182802047 
+Proxy
+OgrenciBilgileri Classı
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Proxy
+{
+    public class BTKOgrenciBilgileri:IOgrenci
+    {
+        public string GetOgrenci()
+        {
+            string ogrenci = "Muhammed Gider\n";
+            ogrenci += "Taner Filiz\n";
+            ogrenci += "Orhan Koyunbakan\n";
+            return ogrenci;
+
+        }
+    }
+}
+
+IOgrenci Classı
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Proxy
+{
+    public interface IOgrenci
+    {
+        string GetOgrenci();
+    }
+}
+
+Proxy Classı
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Proxy
+{
+    public class ProxyOgrenci : IOgrenci
+    {
+        private BTKOgrenciBilgileri _btkObject;
+        private bool LoadRealObject = false;
+        private string userInfo = string.Empty;
+        private string GetOgrenciFromBTK()
+            {
+                try{
+                _btkObject = new BTKOgrenciBilgileri();
+                userInfo = _btkObject.GetOgrenci();
+                LoadRealObject = true;
+                return userInfo;
+                }
+                catch
+                {
+                LoadRealObject = false;
+                return "";
+                }
+            }
+        public string GetOgrenci()
+        {
+            LoadRealObject = false;
+            string result = "";
+            if(_btkObject == null)
+            {
+                result = GetOgrenciFromBTK();
+            }
+            if (!LoadRealObject)
+                return userInfo;
+            else
+                return result;
+        }
+    }
+}
+
+
+Program classı
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Proxy
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            IOgrenci proxy = new ProxyOgrenci();
+            Console.WriteLine(proxy.GetOgrenci());
+
+
+            Console.WriteLine(proxy.GetOgrenci());
+
+            Console.ReadLine();
+        }
+    }
+}
+
+
+Bridge
+SuFaturasi Classı
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Bridge
+{
+    public class SuFaturasiOde:FaturaOdemeImplementor
+    {
+        public override void Ode()
+        {
+            Console.WriteLine("Su faturasi odendi");
+        }
+    }
+}
+
+ElektrikFaturasi Classı
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Bridge
+{
+    class ElektrikFaturasiOde:FaturaOdemeImplementor
+    {
+        public override void Ode()
+        {
+            Console.WriteLine("Elektrik faturasi odendi");
+        }
+    }
+}
+
+FaturaKopru Classı
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Bridge
+{
+    public class FaturaKopru:FaturaYonetimAbstraction
+    {
+        public override void Ode()
+        {
+            _ode.Ode();
+        }
+    }
+}
+
+FaturaOdemeImplementor Classı
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Bridge
+{
+    public abstract class FaturaOdemeImplementor
+    {
+        public abstract void Ode();
+    }
+}
+
+FaturaYonetimAbstraction Classı
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Bridge
+{
+    public abstract class FaturaYonetimAbstraction
+    {
+        public FaturaOdemeImplementor _ode;
+        public abstract void Ode();
+    }
+}
+
+
+
+Program classı
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Bridge
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            int secilen;
+            //su faturası ödemesi 
+            FaturaYonetimAbstraction faturaYonetim =new FaturaKopru();
+            do
+            {
+
+                Console.WriteLine("\nÖdenecek Faturayı Seçiniz:\n-----------------------------");
+                Console.WriteLine("1-Su Faturası");
+                Console.WriteLine("2-Elektrik Faturası");
+                Console.WriteLine("3-Çıkış Yap");
+                secilen = Convert.ToInt32(Console.ReadLine());
+
+                switch (secilen)
+                {
+                    case 1:
+                        Console.Clear();
+                        Console.WriteLine("-------------------------");
+
+                        faturaYonetim._ode = new SuFaturasiOde();
+                        faturaYonetim.Ode();
+
+                        secilen = 0;
+                        break;
+                    case 2:
+                        Console.Clear();
+                        Console.WriteLine("-------------------------");
+
+                        //elektrik faturası ödemesi
+                        faturaYonetim._ode = new ElektrikFaturasiOde();
+                        faturaYonetim.Ode();
+
+                        secilen = 0;
+                        break;
+                    
+                    case 3:
+                        Environment.Exit(0);
+                        break;
+
+                    default:
+                        Console.Clear();
+                        Console.WriteLine("-------------------------");
+                        Console.WriteLine("Böyle Bir Seçenek Yok!!");
+
+                        break;
+                }
+                Console.WriteLine("-------------------------\n");
+            } while (secilen > 3 || secilen <= 0);
+
+
+
+
+
+
+            
+            
+
+            Console.ReadLine();
+        }
+    }
+}
